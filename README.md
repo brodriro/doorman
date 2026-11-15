@@ -10,7 +10,7 @@ An [Omarchy](https://omarchy.org) shell plugin that watches the local network yo
 ## Install
 
 ```bash
-omarchy plugin add <git-url-of-this-repo> --enable
+omarchy plugin add https://github.com/brodriro/doorman.git --enable
 ```
 
 Or from a local checkout: `./install.sh --enable`.
