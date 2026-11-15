@@ -92,7 +92,7 @@ Item {
 
   function send(headline, body, urgency) {
     // argv, never a shell string: names come from the network.
-    Quickshell.execDetached(["omarchy-notification-send", "--app-name", "doorman", "-g", "󰛳",
+    Quickshell.execDetached(["omarchy-notification-send", "--app-name", "Doorman", "-g", "󰛳",
                              "-u", urgency, Presence.notifySafe(headline), body])
   }
 }
