@@ -87,6 +87,32 @@ test("events carry the alias and history is recorded", () => {
   assert.equal(r.state.devices["aa:00:00:00:00:02"].alias, "Tablet de Ana")
 })
 
+test("setBlocked flags a device, persists, and survives scans and prune", () => {
+  let r = run(P.emptyState(NET), 1000, [dev(1), dev(2)])
+  const flagged = P.setBlocked(r.state, "aa:00:00:00:00:02", true)
+  assert.equal(flagged.devices["aa:00:00:00:00:02"].blocked, true)
+  // input is not mutated
+  assert.equal(r.state.devices["aa:00:00:00:00:02"].blocked, false)
+  // survives a normalize round-trip (on-disk reload)
+  const reloaded = P.normalizeState(JSON.parse(JSON.stringify(flagged)), NET)
+  assert.equal(reloaded.devices["aa:00:00:00:00:02"].blocked, true)
+  // a later scan keeps the flag
+  r = run(flagged, 1060, [dev(1), dev(2)])
+  assert.equal(r.state.devices["aa:00:00:00:00:02"].blocked, true)
+  // unflag clears it
+  const cleared = P.setBlocked(r.state, "aa:00:00:00:00:02", false)
+  assert.equal(cleared.devices["aa:00:00:00:00:02"].blocked, false)
+  // flagging an unknown mac is a no-op
+  assert.equal(P.setBlocked(r.state, "ff:ff:ff:ff:ff:ff", true), r.state)
+})
+
+test("isMac validates only well-formed MACs", () => {
+  assert.equal(P.isMac("aa:00:00:00:00:01"), true)
+  assert.equal(P.isMac("AA:00:00:00:00:01"), false)
+  assert.equal(P.isMac("$(reboot)"), false)
+  assert.equal(P.isMac(null), false)
+})
+
 test("applyScan does not mutate its input", () => {
   const first = run(P.emptyState(NET), 1000, [dev(1)]).state
   const frozen = JSON.stringify(first)

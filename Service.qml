@@ -35,6 +35,15 @@ Item {
 
   function refresh() { monitor.refresh() }
   function setAlias(mac, alias) { monitor.setAlias(mac, alias) }
+  function setBlocked(mac, blocked) { monitor.setBlocked(mac, blocked) }
+
+  // Copies a MAC to the clipboard so the user can paste it into the router's
+  // blocklist. argv form, and the MAC is validated hex, so nothing from the
+  // network reaches a shell.
+  function copyMac(mac) {
+    if (!Presence.isMac(mac)) return
+    Quickshell.execDetached(["wl-copy", "--", mac])
+  }
   function markSeen() {
     unseenNew = 0
     newMacs = ({})

@@ -30,6 +30,10 @@ function isNetworkId(value) {
   return typeof value === "string" && NETWORK_ID_RE.test(value)
 }
 
+function isMac(value) {
+  return typeof value === "string" && MAC_RE.test(value)
+}
+
 function emptyState(networkId) {
   return { schema: SCHEMA, networkId: networkId, baselined: false, lastScan: 0, devices: {}, history: [] }
 }
@@ -58,7 +62,8 @@ function normalizeState(raw, networkId) {
       present: d.present === true,
       randomMac: d.randomMac === true,
       isGateway: d.isGateway === true,
-      isSelf: d.isSelf === true
+      isSelf: d.isSelf === true,
+      blocked: d.blocked === true
     }
   }
 
@@ -162,7 +167,8 @@ function applyScan(state, scan, options) {
       d = next.devices[s.mac] = {
         mac: s.mac, ip: s.ip, name: s.name, alias: null,
         firstSeen: now, lastSeen: now, present: true,
-        randomMac: s.randomMac, isGateway: s.isGateway, isSelf: s.isSelf
+        randomMac: s.randomMac, isGateway: s.isGateway, isSelf: s.isSelf,
+        blocked: false
       }
       if (!silent) events.push(event("joined", d, now, false))
     } else {
@@ -198,13 +204,14 @@ function applyScan(state, scan, options) {
 }
 
 // Keeps the device table bounded: forget the longest-absent devices first,
-// but never one with an alias the user gave it.
+// but never one the user has annotated (an alias, or a block mark they want
+// to keep around to copy into the router).
 function pruneDevices(state) {
   var macs = Object.keys(state.devices)
   if (macs.length <= MAX_DEVICES) return
   var removable = macs
     .map(function(m) { return state.devices[m] })
-    .filter(function(d) { return !d.present && !d.alias })
+    .filter(function(d) { return !d.present && !d.alias && !d.blocked })
     .sort(function(a, b) { return a.lastSeen - b.lastSeen })
   for (var i = 0; i < removable.length && Object.keys(state.devices).length > MAX_DEVICES; i++)
     delete state.devices[removable[i].mac]
@@ -214,6 +221,16 @@ function setAlias(state, mac, alias) {
   if (!state.devices[mac]) return state
   var next = copyState(state)
   next.devices[mac].alias = text(alias)
+  return next
+}
+
+// Marks a device the user considers unauthorized. This never touches the
+// network — the plugin is passive. The flag only drives the panel marking so
+// the user can copy the MAC into the router's own blocklist by hand.
+function setBlocked(state, mac, blocked) {
+  if (!state.devices[mac]) return state
+  var next = copyState(state)
+  next.devices[mac].blocked = blocked === true
   return next
 }
 

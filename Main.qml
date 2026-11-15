@@ -70,6 +70,11 @@ Item {
     commit(Presence.setAlias(presenceState, mac, alias))
   }
 
+  function setBlocked(mac, blocked) {
+    if (!stateReady || !presenceState) return
+    commit(Presence.setBlocked(presenceState, mac, blocked))
+  }
+
   // ------------------------------------------------------------ internals
 
   property var presenceState: null
