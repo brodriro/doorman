@@ -234,6 +234,22 @@ function setBlocked(state, mac, blocked) {
   return next
 }
 
+// Counts devices currently present. A flagged (blocked) device is still on the
+// network, so it counts; options can exclude this machine and the gateway.
+// Kept here (not in QML) so the counting rule is unit-tested.
+function countPresent(devices, opts) {
+  opts = opts || {}
+  var n = 0
+  for (var i = 0; i < devices.length; i++) {
+    var d = devices[i]
+    if (!d || !d.present) continue
+    if (opts.excludeSelf && d.isSelf) continue
+    if (opts.excludeGateway && d.isGateway) continue
+    n++
+  }
+  return n
+}
+
 // Devices for display: present first, then by IP.
 function deviceList(state) {
   var list = Object.keys(state.devices).map(function(m) { return state.devices[m] })

@@ -106,6 +106,19 @@ test("setBlocked flags a device, persists, and survives scans and prune", () => 
   assert.equal(P.setBlocked(r.state, "ff:ff:ff:ff:ff:ff", true), r.state)
 })
 
+test("countPresent counts present devices, flagged included, with excludes", () => {
+  const devs = [
+    { present: true, isSelf: true, isGateway: false, blocked: false },
+    { present: true, isSelf: false, isGateway: true, blocked: false },
+    { present: true, isSelf: false, isGateway: false, blocked: true },  // flagged, still present
+    { present: true, isSelf: false, isGateway: false, blocked: false },
+    { present: false, isSelf: false, isGateway: false, blocked: false },
+  ]
+  assert.equal(P.countPresent(devs), 4)                                      // all present (flagged too)
+  assert.equal(P.countPresent(devs, { excludeSelf: true, excludeGateway: true }), 2)  // the flagged one still counts
+  assert.equal(P.countPresent([]), 0)
+})
+
 test("isMac validates only well-formed MACs", () => {
   assert.equal(P.isMac("aa:00:00:00:00:01"), true)
   assert.equal(P.isMac("AA:00:00:00:00:01"), false)

@@ -31,9 +31,12 @@ Panel {
   readonly property var flagged: devices.filter(function(d) { return d.blocked })
   readonly property var online: devices.filter(function(d) { return d.present && !d.blocked })
   readonly property var offline: devices.filter(function(d) { return !d.present && !d.blocked })
-  readonly property int presentCount: devices.filter(function(d) { return d.present }).length
+  // A flagged device is still on the network, so it still counts here and in
+  // the hero total — only its row moves to the Flagged section. Counting lives
+  // in PresenceModel so it stays unit-tested.
+  readonly property int presentCount: Presence.countPresent(devices)
+  readonly property int othersOnline: Presence.countPresent(devices, { excludeSelf: true, excludeGateway: true })
   readonly property var activity: service ? service.history.slice(0, 12) : []
-  readonly property int othersOnline: online.filter(function(d) { return !d.isSelf && !d.isGateway }).length
   readonly property bool alerting: !!service && service.unseenNew > 0
 
   readonly property color neutral: Qt.darker(foreground, 1.25)
@@ -216,7 +219,7 @@ Panel {
             width: parent.width
             title: root.networkTitle()
             meta: root.networkMeta()
-            detail: root.network ? strings.tn("panel.devices", root.online.length).arg(Commons.I18n.formatNumber(root.online.length)) : ""
+            detail: root.network ? strings.tn("panel.devices", root.presentCount).arg(Commons.I18n.formatNumber(root.presentCount)) : ""
             foreground: root.foreground
             fontFamily: root.fontFamily
             iconComponent: Component {
@@ -243,7 +246,7 @@ Panel {
             visible: !!root.network && root.devices.length > 0
             spacing: Style.space(8)
             Pill { big: true; tone: root.accent; label: strings.t("chip.online").arg(root.presentCount) }
-            Pill { big: true; visible: root.alerting; tone: root.urgent; label: strings.t("chip.new").arg(root.service.unseenNew) }
+            Pill { big: true; visible: root.alerting; tone: root.urgent; label: strings.t("chip.new").arg(root.service ? root.service.unseenNew : 0) }
             Pill { big: true; visible: root.offline.length > 0; tone: root.neutral; label: strings.t("chip.absent").arg(root.offline.length) }
           }
 
@@ -306,35 +309,39 @@ Panel {
           Repeater {
             model: root.activity
             delegate: Row {
+              id: activityRow
               required property var modelData
               width: column.width
               spacing: Style.space(8)
 
               Text {
+                id: activityGlyph
                 width: Style.space(16)
                 horizontalAlignment: Text.AlignHCenter
                 textFormat: Text.PlainText
                 // login glyph for a device arriving (joined/returned), logout
                 // for one leaving.
-                text: modelData.type === "left" ? "󰍃" : "󰍂"
-                color: modelData.type === "left" ? root.dim : root.accent
+                text: activityRow.modelData.type === "left" ? "󰍃" : "󰍂"
+                color: activityRow.modelData.type === "left" ? root.dim : root.accent
                 font.family: root.fontFamily
                 font.pixelSize: Style.font.icon
               }
               Text {
                 textFormat: Text.PlainText
-                width: parent.width - Style.space(70)
+                // Fill the gap between the glyph and the timestamp (no magic width).
+                width: activityRow.width - activityGlyph.width - activityTime.width - activityRow.spacing * 2
                 elide: Text.ElideRight
-                text: (modelData.type === "left" ? strings.t("event.left")
-                       : modelData.returning ? strings.t("event.returned")
-                       : strings.t("event.joined")).arg(modelData.name || modelData.ip || modelData.mac)
+                text: (activityRow.modelData.type === "left" ? strings.t("event.left")
+                       : activityRow.modelData.returning ? strings.t("event.returned")
+                       : strings.t("event.joined")).arg(activityRow.modelData.name || activityRow.modelData.ip || activityRow.modelData.mac)
                 color: root.foreground
                 font.family: root.fontFamily
                 font.pixelSize: Style.font.bodySmall
               }
               Text {
+                id: activityTime
                 textFormat: Text.PlainText
-                text: root.formatTime(modelData.ts)
+                text: root.formatTime(activityRow.modelData.ts)
                 color: root.dim
                 font.family: root.fontFamily
                 font.pixelSize: Style.font.caption

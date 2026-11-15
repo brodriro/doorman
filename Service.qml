@@ -1,5 +1,6 @@
 import QtQuick
 import Quickshell
+import Quickshell.Io
 import qs.Commons as Commons
 import "PresenceModel.js" as Presence
 
@@ -37,12 +38,27 @@ Item {
   function setAlias(mac, alias) { monitor.setAlias(mac, alias) }
   function setBlocked(mac, blocked) { monitor.setBlocked(mac, blocked) }
 
+  // Whether wl-copy is installed; probed once at startup (static argv to sh,
+  // no interpolation).
+  property bool clipboardReady: false
+  Process {
+    command: ["sh", "-c", "command -v wl-copy >/dev/null 2>&1"]
+    running: true
+    onExited: function(code) { root.clipboardReady = (code === 0) }
+  }
+
   // Copies a MAC to the clipboard so the user can paste it into the router's
   // blocklist. argv form, and the MAC is validated hex, so nothing from the
-  // network reaches a shell.
+  // network reaches a shell. Confirms on success; if wl-copy is missing it
+  // says so instead of failing silently.
   function copyMac(mac) {
     if (!Presence.isMac(mac)) return
+    if (!clipboardReady) {
+      send(strings.t("notify.clipboardMissingTitle"), strings.t("notify.clipboardMissingBody"), "normal")
+      return
+    }
     Quickshell.execDetached(["wl-copy", "--", mac])
+    send(strings.t("notify.copiedTitle"), mac, "low")
   }
   function markSeen() {
     unseenNew = 0
