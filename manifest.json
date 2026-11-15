@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "id": "xaiovz.doorman",
+  "name": "Doorman",
+  "version": "0.1.0",
+  "author": "xaiovz",
+  "license": "MIT",
+  "description": "See who joins and leaves the local network you are on, with a bar counter, a device list, and notifications.",
+  "kinds": [
+    "service",
+    "bar-widget"
+  ],
+  "entryPoints": {
+    "service": "Service.qml",
+    "barWidget": "Panel.qml"
+  },
+  "barWidget": {
+    "displayName": "Doorman",
+    "description": "Devices on the current network: who is online, who was seen before, and recent joins and leaves.",
+    "category": "Network",
+    "aliases": [
+      "doorman",
+      "lan",
+      "devices"
+    ],
+    "allowMultiple": false,
+    "defaultSection": "right",
+    "defaults": {
+      "scanIntervalSec": 60,
+      "absenceGraceSec": 300,
+      "activeSweep": true,
+      "notify": "all"
+    },
+    "schema": [
+      {
+        "key": "scanIntervalSec",
+        "type": "integer",
+        "label": "Scan interval (seconds)",
+        "min": 15,
+        "max": 3600,
+        "step": 15,
+        "defaultValue": 60
+      },
+      {
+        "key": "absenceGraceSec",
+        "type": "integer",
+        "label": "Absence before \"left\" (seconds)",
+        "min": 60,
+        "max": 7200,
+        "step": 60,
+        "defaultValue": 300,
+        "description": "Phones sleep their Wi-Fi; a device must be missing this long to count as gone."
+      },
+      {
+        "key": "activeSweep",
+        "type": "boolean",
+        "label": "Active ping sweep",
+        "defaultValue": true,
+        "description": "Ping every address of the local /24 each scan so sleeping devices show up. Off = only devices the computer already talks to."
+      },
+      {
+        "key": "notify",
+        "type": "enum",
+        "label": "Notifications",
+        "options": [
+          "all",
+          "new",
+          "off"
+        ],
+        "defaultValue": "all",
+        "description": "all = every join and leave; new = only devices never seen before; off = none."
+      }
+    ]
+  }
+}
