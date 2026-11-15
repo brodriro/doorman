@@ -16,7 +16,7 @@ omarchy plugin add https://github.com/brodriro/doorman.git --enable
 
 Or from a local checkout: `./install.sh --enable`.
 
-Remove it from the bar with `omarchy plugin disable xaiovz.doorman`.
+Update to the latest commit with `omarchy plugin update xaiovz.doorman`. Remove it from the bar with `omarchy plugin disable xaiovz.doorman`.
 
 ## Settings
 

@@ -2,9 +2,10 @@
   "schemaVersion": 1,
   "id": "xaiovz.doorman",
   "name": "Doorman",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "author": "xaiovz",
   "license": "MIT",
+  "homepage": "https://github.com/brodriro/doorman",
   "description": "See who joins and leaves the local network you are on, with a bar counter, a device list, and notifications.",
   "kinds": [
     "service",

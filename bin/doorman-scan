@@ -111,6 +111,10 @@ if (( sweep )) && ! fixture; then
   scanned=${#hosts[@]}
   printf '%s\n' "${hosts[@]}" |
     timeout "$SWEEP_TIMEOUT" xargs -P "$SWEEP_PARALLEL" -I{} ping -c1 -W1 -n -q {} >/dev/null 2>&1 || true
+elif ! fixture && [[ -n $gateway ]]; then
+  # Without a sweep, still make sure the gateway's MAC resolves: the network
+  # id is the gateway MAC, and a scan that lacks it is discarded downstream.
+  ping -c1 -W1 -n -q "$gateway" >/dev/null 2>&1 || true
 fi
 
 ssid=""
