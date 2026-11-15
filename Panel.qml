@@ -311,12 +311,15 @@ Panel {
               spacing: Style.space(8)
 
               Text {
+                width: Style.space(16)
+                horizontalAlignment: Text.AlignHCenter
                 textFormat: Text.PlainText
-                text: modelData.type === "left" ? "−" : "+"
+                // login glyph for a device arriving (joined/returned), logout
+                // for one leaving.
+                text: modelData.type === "left" ? "󰍃" : "󰍂"
                 color: modelData.type === "left" ? root.dim : root.accent
                 font.family: root.fontFamily
-                font.pixelSize: Style.font.body
-                font.bold: true
+                font.pixelSize: Style.font.icon
               }
               Text {
                 textFormat: Text.PlainText
