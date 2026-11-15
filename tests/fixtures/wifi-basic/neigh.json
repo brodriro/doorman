@@ -1,0 +1,6 @@
+[{"dst":"10.0.0.1","lladdr":"9C:9D:7E:00:00:01","state":["REACHABLE"]},
+ {"dst":"10.0.0.5","lladdr":"00:1b:a9:00:00:05","state":["STALE"]},
+ {"dst":"10.0.0.6","state":["FAILED"]},
+ {"dst":"10.0.0.7","lladdr":"00:11:22:33:44:77","state":["INCOMPLETE"]},
+ {"dst":"10.0.0.8","lladdr":"not-a-mac","state":["REACHABLE"]},
+ {"dst":"10.0.0.9","lladdr":"02:00:00:00:00:09","state":["DELAY"]}]

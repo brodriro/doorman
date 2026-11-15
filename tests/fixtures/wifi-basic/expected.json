@@ -1,0 +1,62 @@
+{
+  "schema": 1,
+  "ts": 1700000000,
+  "network": {
+    "id": "9c9d7e000001",
+    "iface": "wlan0",
+    "wireless": true,
+    "ssid": "HomeNet",
+    "bssid": "9c:9d:7e:00:00:01",
+    "address": "10.0.0.20",
+    "prefix": 16,
+    "subnet": "10.0.0.0/24",
+    "gateway": "10.0.0.1",
+    "gatewayMac": "9c:9d:7e:00:00:01"
+  },
+  "sweep": {
+    "enabled": true,
+    "scanned": 0
+  },
+  "devices": [
+    {
+      "ip": "10.0.0.1",
+      "mac": "9c:9d:7e:00:00:01",
+      "state": "REACHABLE",
+      "name": null,
+      "nameSource": null,
+      "randomMac": false,
+      "isGateway": true,
+      "isSelf": false
+    },
+    {
+      "ip": "10.0.0.5",
+      "mac": "00:1b:a9:00:00:05",
+      "state": "STALE",
+      "name": "printer",
+      "nameSource": "mdns",
+      "randomMac": false,
+      "isGateway": false,
+      "isSelf": false
+    },
+    {
+      "ip": "10.0.0.9",
+      "mac": "02:00:00:00:00:09",
+      "state": "DELAY",
+      "name": "img srcx(rm)",
+      "nameSource": "mdns",
+      "randomMac": true,
+      "isGateway": false,
+      "isSelf": false
+    },
+    {
+      "ip": "10.0.0.20",
+      "mac": "00:11:22:33:44:20",
+      "state": "SELF",
+      "name": null,
+      "nameSource": null,
+      "randomMac": false,
+      "isGateway": false,
+      "isSelf": true
+    }
+  ]
+}

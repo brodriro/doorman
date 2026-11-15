@@ -1,0 +1,4 @@
++;wlan0;IPv4;ignored;_http._tcp;local
+=;wlan0;IPv4;Printer;_ipp._tcp;local;printer.local;10.0.0.5;631;""
+=;wlan0;IPv4;Evil;_http._tcp;local;<img src=x>"$(rm).local;10.0.0.9;80;""
+=;wlan0;IPv6;Printer;_ipp._tcp;local;printer6.local;fe80::1;631;""
